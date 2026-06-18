@@ -371,26 +371,35 @@ const database = getDatabase(app);
   function initFirebase(){
   const screensRef = ref(database, 'screens');
   
-  onValue(screensRef, (snapshot)=>{
-  
-      console.log("SCREEN DATA:", snapshot.val());
-  
-      const data = snapshot.val() || {};
-  
-      screens = Object.values(data).map((s,i)=>({
-          ...s,
-          id:i,
-          status:
-            s.lastSeen &&
-            Date.now() - s.lastSeen < 10000
-            ? 'online'
-            : 'offline'
-      }));
-  
-      updateKPIs();
-      renderTable();
-      updateCharts();
-  });
+onValue(
+  screensRef,
+  (snapshot) => {
+
+    console.log("SCREEN DATA:", snapshot.val());
+
+    const data = snapshot.val() || {};
+
+    screens = Object.entries(data).map(([id,s]) => ({
+      id,
+      ...s,
+      status:
+        s.lastSeen &&
+        Date.now() - s.lastSeen < 10000
+          ? 'online'
+          : 'offline'
+    }));
+
+    console.log("PARSED SCREENS:", screens);
+
+    updateKPIs();
+    renderTable();
+    updateCharts();
+
+  },
+  (error) => {
+    console.error("Firebase Read Error:", error);
+  }
+);
     const contentRef = ref(database, 'content');
     onValue(contentRef, (snapshot)=>{
       const data = snapshot.val() || {};
