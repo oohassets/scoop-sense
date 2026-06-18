@@ -105,7 +105,13 @@
 
   <main class="layout" id="layout">
     <section class="stage" id="stage">
-      <video id="stageVideo" playsinline loop muted></video>
+      <video
+    id="stageVideo"
+    playsinline
+    autoplay
+    muted
+    loop
+></video>
       <div class="stage-placeholder" id="stagePlaceholder"></div>
       <div class="mode-badge" id="modeBadge"><span class="mode-dot" id="modeDot"></span><span id="modeText">NO AUDIENCE</span></div>
       <div class="privacy-note">🔥 Synced via Firebase · Processed on-device</div>
@@ -291,14 +297,6 @@ stageVideo.onerror = (e)=>{
 };
   }
 
-  function setMode(mode){
-    if(mode === currentMode) return;
-    currentMode = mode;
-    applyModeUI(mode);
-    applyStageSource(mode);
-    uploadToFirebase();
-  }
-
   function requestMode(target){
     const now = performance.now();
     if(target === currentMode){ pendingMode = null; return; }
@@ -426,7 +424,7 @@ stageVideo.onerror = (e)=>{
     try{
       const contentRef = ref(database, 'content');
         onValue(contentRef, (snapshot) => {
-            const data = snapshot.val()?.videos || {};
+            const data = snapshot.val() || {};
         
             console.log("CONTENT DATA:", data);
         
@@ -442,6 +440,10 @@ stageVideo.onerror = (e)=>{
             stageVideo.load();
             
             applyStageSource(currentMode);
+
+          firebaseStatus.textContent = 'Connected ✓';
+          firebasePill.textContent = 'live';
+          firebasePill.className = 'pill ready';
         });
     }catch(e){
       console.error('Firebase listen failed:', e);
