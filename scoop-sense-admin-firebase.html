@@ -252,6 +252,13 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+}
+from "firebase/storage";
 
 /* ════════════════════════════════════════ */
 /* FIREBASE CONFIG — UPDATE THESE VALUES    */
@@ -262,6 +269,24 @@ const firebaseConfig = {
   projectId: "scoopassets",     // Copy from Firebase Console → Project Settings
   databaseURL: "https://scoopassets-default-rtdb.firebaseio.com/"  // Copy from Realtime Database
 };
+
+  update(contentRef,{
+   adult: downloadURL
+});
+
+  const storage = getStorage();
+
+const fileRef = storageRef(
+    storage,
+    `content/${Date.now()}-${file.name}`
+);
+
+await uploadBytes(fileRef, file);
+
+const downloadURL =
+    await getDownloadURL(fileRef);
+
+centralContent[mode] = downloadURL;
 
 /* ════════════════════════════════════════ */
 
