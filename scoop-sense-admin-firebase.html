@@ -274,23 +274,7 @@ const firebaseConfig = {
   databaseURL: "https://scoopassets-default-rtdb.firebaseio.com/"
 };
 
-  update(contentRef,{
-   adult: downloadURL
-});
 
-  const storage = getStorage();
-
-const fileRef = storageRef(
-    storage,
-    `content/${Date.now()}-${file.name}`
-);
-
-await uploadBytes(fileRef, file);
-
-const downloadURL =
-    await getDownloadURL(fileRef);
-
-centralContent[mode] = downloadURL;
 
 /* ════════════════════════════════════════ */
 
@@ -385,19 +369,28 @@ const database = getDatabase(app);
 
   /* FIREBASE LISTENERS */
   function initFirebase(){
-    const screensRef = ref(database, 'screens');
-    onValue(screensRef, (snapshot)=>{
+  const screensRef = ref(database, 'screens');
+  
+  onValue(screensRef, (snapshot)=>{
+  
+      console.log("SCREEN DATA:", snapshot.val());
+  
       const data = snapshot.val() || {};
+  
       screens = Object.values(data).map((s,i)=>({
-        ...s,
-        id: i,
-        status: s.lastSeen && Date.now() - s.lastSeen < 10000 ? 'online' : 'offline'
+          ...s,
+          id:i,
+          status:
+            s.lastSeen &&
+            Date.now() - s.lastSeen < 10000
+            ? 'online'
+            : 'offline'
       }));
+  
       updateKPIs();
       renderTable();
       updateCharts();
-    });
-
+  });
     const contentRef = ref(database, 'content');
     onValue(contentRef, (snapshot)=>{
       const data = snapshot.val() || {};
